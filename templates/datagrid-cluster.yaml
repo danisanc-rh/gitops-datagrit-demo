@@ -1,0 +1,37 @@
+{{- range $dg := .Values.datagridClusters }}
+{{- if $dg.enabled }}
+---
+apiVersion: infinispan.org/v1
+kind: Infinispan
+metadata:
+  name: {{ required "each Datagrid cluster must have a name" $dg.name }}
+  annotations:
+    infinispan.org/monitoring: "true"
+    infinispan.org/operatorPodTargetLabels: 'rht.comp,rht.comp_ver,rht.prod_name,rht.prod_ver,rht.subcomp_t'
+    # Sync Wave 1 para que el clúster se declare primero en la reconciliación de Argo
+    argocd.argoproj.io/sync-wave: "1"
+  {{- with $dg.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  version: {{ required "version is required" $dg.version | quote }}
+  replicas: {{ required "replicas are required" $dg.replicas }}
+  security:
+    {{- toYaml $dg.security | nindent 4 }}
+  container:
+    {{- toYaml $dg.container | nindent 4 }}
+  expose:
+    {{- toYaml $dg.expose | nindent 4 }}
+  scheduling:
+    {{- toYaml $dg.scheduling | nindent 4 }}
+  service:
+    {{- toYaml $dg.service | nindent 4 }}
+  jmx: 
+    {{- toYaml $dg.jmx | nindent 4 }}
+  configListener:
+    {{- toYaml $dg.configListener | nindent 4 }}
+  upgrades:
+    {{- toYaml $dg.upgrades | nindent 4 }}
+{{- end }}
+{{- end }}

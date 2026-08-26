@@ -1,0 +1,21 @@
+{{- range $cache := .Values.caches }}
+{{- if $cache.enabled }}
+---
+apiVersion: infinispan.org/v2alpha1
+kind: Cache
+metadata:
+  name: {{ required "each Cache must have a metadata name" $cache.name }}
+  annotations:
+    # Sync Wave 2 para que las cachés se apliquen cuando el recurso Infinispan ya exista
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  clusterName: {{ required "each Cache must define a target clusterName" $cache.clusterName }}
+  name: {{ required "each Cache must have a spec internal name" $cache.cacheName }}
+  template: |
+    {{- $cache.template | nindent 4 }}
+  {{- with $cache.updates }}
+  updates:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

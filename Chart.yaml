@@ -1,0 +1,6 @@
+apiVersion: v2
+name: datagrid-infra
+description: Helm Chart para desplegar la infraestructura de Red Hat Data Grid en OpenShift
+type: application
+version: 1.0.0
+appVersion: "8.6.0"
