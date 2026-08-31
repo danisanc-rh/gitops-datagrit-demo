@@ -5,7 +5,6 @@ datagridClusters:
     version: 8.4.4-1
     replicas: 1
     labels:
-      app.kubernetes.io/instance: gitops-datagrid-infra
       rht.comp: Data_Grid
       rht.comp_ver: 8.4.4
       rht.prod_name: Red_Hat_Runtimes
@@ -20,7 +19,7 @@ datagridClusters:
         type: Service
       endpointSecretName: datagrid-generated-secret
     container:
-      memory: "3Gi:1Gi"
+      memory: '5Gi:3Gi'
     expose:
       type: Route
     scheduling:
@@ -31,13 +30,13 @@ datagridClusters:
                 labelSelector:
                   matchLabels:
                     app: infinispan-pod
-                    clusterName: datagrid-large
-                    infinispan_cr: datagrid-large
+                    clusterName: datagrid
+                    infinispan_cr: datagrid
                 topologyKey: kubernetes.io/hostname
               weight: 100
     service:
       container:
-        storage: 5Gi
+        storage: 15Gi
       type: DataGrid
     jmx: {}
     configListener:
@@ -46,107 +45,71 @@ datagridClusters:
         level: info
     upgrades:
       type: Shutdown
+    version: 8.4.4-1
+    replicas: 5
 
 # Lista de cachés vivas en OpenShift
 caches:
   - enabled: true
-    name: info-cache
+    name: info-user-cache
     clusterName: datagrid
-    cacheName: info-cache
     template: |
       distributedCache:
-        owners: "2"
-        mode: "SYNC"
-        statistics: "true"
+        owners: 2
+        mode: ASYNC
+        statistics: true
         encoding:
           key:
-            mediaType: "application/x-protostream"
+            mediaType: application/octet-stream
           value:
-            mediaType: "application/x-protostream"
-    updates:
-      strategy: retain
-  - enabled: true
-    name: info-user-cachev-4-spbvr
-    clusterName: datagrid
-    cacheName: info-user-cachev4
-    template: |
-      distributedCache:
-        owners: "2"
-        mode: "SYNC"
-        statistics: "true"
-        encoding:
-          mediaType: "application/octet-stream"
+            mediaType: application/octet-stream
         locking:
-          concurrencyLevel: "128"
-          acquireTimeout: "500"
+          concurrencyLevel: 128
+          acquireTimeout: 500
         expiration:
-          lifespan: "28800000"
-          maxIdle: "28260000"
+          lifespan: 3610000 
+          maxIdle: 3605000
         memory:
-          storage: "OFF_HEAP"
-          maxSize: "1GB"
-          whenFull: "REMOVE"
+          storage: OFF_HEAP
+          maxSize: 512MB
+          whenFull: REMOVE
+        persistence:
+          passivation: true
+          fileStore:
+            shared: false
     updates:
       strategy: retain
   - enabled: true
-    name: resp-cache
+    name: respCache
     clusterName: datagrid
-    cacheName: respCache
     template: |
-      distributedCache:
-        expiration:
+      distributedCache: 
+        owners: "3"
+        mode: "ASYNC"
+        statistics: "true"
+        encoding: 
+          key: 
+            mediaType: "application/octet-stream"
+          value: 
+            mediaType: "application/octet-stream"
+        expiration: 
           lifespan: "21600000"
           interval: "60000"
-        mode: "ASYNC"
-        owners: 3
-        statistics: "true"
-        stateTransfer:
-          await-initial-transfer: "false"
-        encoding:
-          key:
-            mediaType: "application/octet-stream"
-          value:
-            mediaType: "application/octet-stream"
-        memory:
+        memory: 
           storage: "OFF_HEAP"
-          max-size: "1GB"
-          when-full: REMOVE
-        persistence:
+          maxSize: "3GB"
+          whenFull: "REMOVE"
+        persistence: 
           passivation: "false"
-          fileStore:
+          fileStore: 
             shared: "false"
-            data:
+            data: 
               path: "user_type/data"
-            index:
+            index: 
               path: "user_type/index"
-    updates:
-      strategy: retain
-  - enabled: true
-    name: token-cache
-    clusterName: datagrid
-    cacheName: token-cache
-    template: |
-      distributedCache:
-        owners: "2"
-        mode: "SYNC"
-        statistics: "true"
-        encoding:
-          key:
-            mediaType: "application/x-protostream"
-          value:
-            mediaType: "application/x-protostream"
-    updates:
-      strategy: retain
-  - enabled: true
-    name: token-cache-new-api-j9vv4
-    clusterName: datagrid
-    cacheName: token-cache-new-api
-    template: |
-      distributedCache:
-        owners: "2"
-        mode: "SYNC"
-        statistics: "true"
-        encoding:
-          mediaType: "application/x-protostream"
+            writeBehind: 
+              modificationQueueSize: "8192"
+        stateTransfer: 
+          awaitInitialTransfer: "false"
     updates:
       strategy: retain
