@@ -79,7 +79,7 @@ caches:
     updates:
       strategy: retain
   - enabled: true
-    name: respCache
+    name: resp-cache
     cacheName: respCache
     clusterName: datagrid
     template: |
