@@ -3,7 +3,6 @@ datagridClusters:
   - enabled: true
     name: datagrid
     version: 8.4.4-1
-    replicas: 1
     labels:
       rht.comp: Data_Grid
       rht.comp_ver: 8.4.4
@@ -45,7 +44,6 @@ datagridClusters:
         level: info
     upgrades:
       type: Shutdown
-    version: 8.4.4-1
     replicas: 5
 
 # Lista de cachés vivas en OpenShift
