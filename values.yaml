@@ -50,6 +50,7 @@ datagridClusters:
 caches:
   - enabled: true
     name: info-user-cache
+    cacheName: info-user-cache
     clusterName: datagrid
     template: |
       distributedCache:
@@ -79,6 +80,7 @@ caches:
       strategy: retain
   - enabled: true
     name: respCache
+    cacheName: respCache
     clusterName: datagrid
     template: |
       distributedCache: 
